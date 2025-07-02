@@ -67,6 +67,40 @@ app.post('/categories', async (req, res) => {
     }
 })
 
+//! query for fetch category from DB
+
+async function getAllCategory(){
+
+    try {
+
+        const category = await Category.find()
+
+        return category
+
+    } catch (error) {
+        
+    }
+}
+
+//! get route to fetch categories
+
+app.get("/categories", async (req, res) => {
+
+    try {
+
+        const category = await getAllCategory()
+
+        if(category !=0 ){
+            res.json({data: {categories: category}})
+        }else{
+            res.status(404).json({error: "Categories not found"})
+        }
+
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch categories"})
+    }
+})
+
 
 
 
@@ -139,9 +173,13 @@ app.get('/products', async (req, res) => {
         if(product != 0){
 
             res.json({data: {products: product}})
+        }else{
+            res.status(404).json({error: "products not found"})
         }
         
     } catch (error) {
+
+        res.status(500).json({error: "Failed to fetch products"})
         
     }
 })
