@@ -23,87 +23,87 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 
-//! query to add new category
+// //! query to add new category
 
-async function createCategory(newCategory) {
+// async function createCategory(newCategory) {
 
-    try {
+//     try {
 
-        const addCategory = new Category(newCategory)
+//         const addCategory = new Category(newCategory)
 
-        const saveCategory = await addCategory.save()
+//         const saveCategory = await addCategory.save()
 
-        return saveCategory
+//         return saveCategory
 
-    } catch (error) {
+//     } catch (error) {
 
-        console.log("Failed to add new category", error)
+//         console.log("Failed to add new category", error)
         
-    }
+//     }
     
-}
+// }
 
-//! post route to add category
+// //! post route to add category
 
-app.post('/categories', async (req, res) => {
+// app.post('/categories', async (req, res) => {
 
-    try {
+//     try {
 
-        const addedCategory = await createCategory(req.body)
+//         const addedCategory = await createCategory(req.body)
 
-        if(addedCategory){
+//         if(addedCategory){
 
-            res.status(201).json({message: "Category added successfully", addedCategory: addedCategory})
-        }else{
+//             res.status(201).json({message: "Category added successfully", addedCategory: addedCategory})
+//         }else{
 
-            res.status(404).json({error: "Failed to add category"})
-        }
+//             res.status(404).json({error: "Failed to add category"})
+//         }
 
 
-    } catch (error) {
+//     } catch (error) {
 
-        res.status(500).json({error: "Failed to add category"})
+//         res.status(500).json({error: "Failed to add category"})
         
-    }
-})
+//     }
+// })
 
-//! query for fetch category from DB
+// //! query for fetch category from DB
 
-async function getAllCategory(){
+// async function getAllCategory(){
 
-    try {
+//     try {
 
-        const category = await Category.find()
+//         const category = await Category.find()
 
-        return category
+//         return category
 
-    } catch (error) {
+//     } catch (error) {
         
-    }
-}
+//     }
+// }
 
-//! get route to fetch categories
+// //! get route to fetch categories
 
-app.get("/categories", async (req, res) => {
+// app.get("/categories", async (req, res) => {
 
-    try {
+//     try {
 
-        const category = await getAllCategory()
+//         const category = await getAllCategory()
 
-        if(category !=0 ){
-            res.json({data: {categories: category}})
-        }else{
-            res.status(404).json({error: "Categories not found"})
-        }
+//         if(category !=0 ){
+//             res.json({data: {categories: category}})
+//         }else{
+//             res.status(404).json({error: "Categories not found"})
+//         }
 
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch categories"})
-    }
-})
-
-
+//     } catch (error) {
+//         res.status(500).json({error: "Failed to fetch categories"})
+//     }
+// })
 
 
+
+//! query to add product
 async function createProduct(newProduct) {
 
     try {
@@ -122,6 +122,7 @@ async function createProduct(newProduct) {
     
 }
 
+//! route for adding products
 app.post('/products', async (req, res) => {
 
     try {
@@ -162,8 +163,9 @@ async function getAllProducts(){
     }
 }
 
-getAllProducts()
 
+
+//route for fetching products
 app.get('/products', async (req, res) => {
 
     try {
@@ -183,7 +185,6 @@ app.get('/products', async (req, res) => {
         
     }
 })
-
 
 
 

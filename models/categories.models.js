@@ -1,23 +1,23 @@
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 
-const CategorySchema = new mongoose.Schema({
+// const CategorySchema = new mongoose.Schema({
 
-    name: {
-        type: String,
-        required: true
-    },
+//     name: {
+//         type: String,
+//         required: true
+//     },
 
-    imageUrl : {
-        type : String,
-        default: "https://placehold.co/600x400?text=Dressified"
-    },
+//     imageUrl : {
+//         type : String,
+//         default: "https://placehold.co/600x400?text=Dressified"
+//     },
 
-    description: {
-    type: String
-  }
-})
+//     description: {
+//     type: String
+//   }
+// })
 
-const Category = mongoose.model('Category', CategorySchema)
+// const Category = mongoose.model('Category', CategorySchema)
 
-module.exports = Category
+// module.exports = Category
 

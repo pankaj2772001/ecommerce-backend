@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
@@ -43,14 +43,26 @@ const ProductSchema = new mongoose.Schema(
       },
     ],
 
-    stock: {
-      type: Number,
-      default: 10,
-    },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
+     inStock: {
+    type: Boolean,
+    default: true
+  },
+   
+   // Reference to section like "Mens", "Womens", "Kids"
+  section: {
+    type: String,
+    enum: ["Mens", "Womens", "Kids"],
+    required: true
+  },
+
+  // Category name like "T-Shirts", "Jeans", etc.
+  category: {
+    type: String,
+    required: true,
+    enum: ["Shirts","T-shirts","Shorts","Bottoms","Jackets","Sneakers","Tops","Dress","Kurta","Pants","Pyjamas","Joggers","Trousers","Flipflops"]
+  },
+
+  
   },
 
   { timestamps: true }
