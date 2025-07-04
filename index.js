@@ -151,7 +151,7 @@ async function getAllProducts(){
 
     try {
 
-        const product = await Product.find().populate("category")
+        const product = await Product.find()
 
         return product
          
