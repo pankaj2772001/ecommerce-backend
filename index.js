@@ -4,6 +4,7 @@ initializeData()
 
 const Product = require("./models/products.models")
 const Category = require("./models/categories.models")
+const Wishlist = require("./models/wishlist.model")
 
 const express = require('express')
 require("dotenv").config()
@@ -185,6 +186,51 @@ app.get('/products', async (req, res) => {
         
     }
 })
+
+
+//query to addto wishlist
+
+async function addToWishList(product) {
+
+    try {
+
+        const addProduct = new Wishlist(product)
+
+        const saveProduct = await addProduct.save()
+
+        return saveProduct
+        
+    } catch (error) {
+
+        console.log("Failed to add to cart", error)
+        
+    }
+    
+}
+
+//route to add to wishlist
+
+app.post("/wishlist", async (req, res) => {
+
+    try {
+
+        const product = await addToWishList(req.body)
+
+        if(!product){
+
+            res.status(404).json({error: "Failed to add to wishlist"})
+        }else{
+
+            res.status(202).json({message: "Successfully added to wishlist", item: product})
+        }
+        
+    } catch (error) {
+
+        res.status(500).json({error: "Failed to add to wishlist"})
+        
+    }
+})
+
 
 
 
