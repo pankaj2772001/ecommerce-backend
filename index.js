@@ -1,28 +1,27 @@
-const {initializeData} = require("./db/db.connect")
+const { initializeData } = require("./db/db.connect");
 
-initializeData()
+initializeData();
 
-const Product = require("./models/products.models")
-const Category = require("./models/categories.models")
-const Wishlist = require("./models/wishlist.model")
+const Product = require("./models/products.models");
+const Category = require("./models/categories.models");
+const Wishlist = require('./models/wishlist.models');
 
-const express = require('express')
-require("dotenv").config()
+const express = require("express");
+require("dotenv").config();
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-const cors = require('cors')
+const cors = require("cors");
 
 const corsOptions = {
-    origin: "*",
-    credentials: true,
-    optionSuccessStatus: 200
-}
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 
-app.use(cors(corsOptions))
-
+app.use(cors(corsOptions));
 
 // //! query to add new category
 
@@ -39,9 +38,9 @@ app.use(cors(corsOptions))
 //     } catch (error) {
 
 //         console.log("Failed to add new category", error)
-        
+
 //     }
-    
+
 // }
 
 // //! post route to add category
@@ -60,11 +59,10 @@ app.use(cors(corsOptions))
 //             res.status(404).json({error: "Failed to add category"})
 //         }
 
-
 //     } catch (error) {
 
 //         res.status(500).json({error: "Failed to add category"})
-        
+
 //     }
 // })
 
@@ -79,7 +77,7 @@ app.use(cors(corsOptions))
 //         return category
 
 //     } catch (error) {
-        
+
 //     }
 // }
 
@@ -102,141 +100,118 @@ app.use(cors(corsOptions))
 //     }
 // })
 
-
-
 //! query to add product
 async function createProduct(newProduct) {
+  try {
+    const addProduct = new Product(newProduct);
 
-    try {
+    const saveProduct = await addProduct.save();
 
-        const addProduct = new Product(newProduct)
-
-        const saveProduct = await addProduct.save()
-
-        return saveProduct
-
-    } catch (error) {
-
-        console.log("Failed to add new product", error)
-        
-    }
-    
+    return saveProduct;
+  } catch (error) {
+    console.log("Failed to add new product", error);
+  }
 }
 
 //! route for adding products
-app.post('/products', async (req, res) => {
+app.post("/products", async (req, res) => {
+  try {
+    const addProduct = await createProduct(req.body);
 
-    try {
-
-        const addProduct = await createProduct(req.body)
-
-        if(addProduct){
-
-            res.status(201).json({message: "Product added successfully", addedProduct: addProduct})
-        }else{
-
-            res.status(404).json({error: "Failed to add product"})
-        }
-
-
-    } catch (error) {
-
-        res.status(500).json({error: "Failed to add product"})
-        
+    if (addProduct) {
+      res.status(201).json({
+        message: "Product added successfully",
+        addedProduct: addProduct,
+      });
+    } else {
+      res.status(404).json({ error: "Failed to add product" });
     }
-})
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add product" });
+  }
+});
 
 //! query for fetch all products
 
-async function getAllProducts(){
+async function getAllProducts() {
+  try {
+    const product = await Product.find();
 
-    try {
-
-        const product = await Product.find()
-
-        return product
-         
-        
-    } catch (error) {
-
-        console.log("Failed to fetch product", error)
-        
-    }
+    return product;
+  } catch (error) {
+    console.log("Failed to fetch product", error);
+  }
 }
 
-
-
 //route for fetching products
-app.get('/products', async (req, res) => {
+app.get("/products", async (req, res) => {
+  try {
+    const product = await getAllProducts();
 
-    try {
-
-        const product = await getAllProducts()
-
-        if(product != 0){
-
-            res.json({data: {products: product}})
-        }else{
-            res.status(404).json({error: "products not found"})
-        }
-        
-    } catch (error) {
-
-        res.status(500).json({error: "Failed to fetch products"})
-        
+    if (product != 0) {
+      res.json({ data: { products: product } });
+    } else {
+      res.status(404).json({ error: "products not found" });
     }
-})
-
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch products" });
+  }
+});
 
 //query to addto wishlist
 
 async function addToWishList(product) {
+  try {
+    const addProduct = new Wishlist(product);
 
-    try {
+    const saveProduct = await addProduct.save();
 
-        const addProduct = new Wishlist(product)
-
-        const saveProduct = await addProduct.save()
-
-        return saveProduct
-        
-    } catch (error) {
-
-        console.log("Failed to add to cart", error)
-        
-    }
-    
+    return saveProduct;
+  } catch (error) {
+    console.log("Failed to add to cart", error);
+  }
 }
 
 //route to add to wishlist
 
 app.post("/wishlist", async (req, res) => {
+  try {
+    const product = await addToWishList(req.body);
 
-    try {
-
-        const product = await addToWishList(req.body)
-
-        if(!product){
-
-            res.status(404).json({error: "Failed to add to wishlist"})
-        }else{
-
-            res.status(202).json({message: "Successfully added to wishlist", item: product})
-        }
-        
-    } catch (error) {
-
-        res.status(500).json({error: "Failed to add to wishlist"})
-        
+    if (!product) {
+      res.status(404).json({ error: "Failed to add to wishlist" });
+    } else {
+      res
+        .status(202)
+        .json({ message: "Successfully added to wishlist", item: product });
     }
-})
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add to wishlist" });
+  }
+});
+
+async function getWishlistItems() {
+  try {
+    const allItems = await Wishlist.find().populate("product");
+    console.log(allItems)
+    return allItems;
+  } catch (error) {
+    console.log("Error fetching wishlist items:", error);
+  }
+}
 
 
+app.get("/wishlist", async (req, res) => {
+  try {
+    const items = await getWishlistItems();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch wishlist items." });
+  }
+});
 
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000
-
-app.listen(PORT,() => {
-
-    console.log(`server is running on port ${PORT}`)
-})
+app.listen(PORT, () => {
+  console.log(`server is running on port ${PORT}`);
+});
