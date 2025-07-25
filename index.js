@@ -210,6 +210,44 @@ app.get("/wishlist", async (req, res) => {
   }
 });
 
+
+//query to removeWishList
+
+async function removeWishListItems(itemId){
+
+    try {
+
+        const deletedItem = await Wishlist.findByIdAndDelete(itemId)
+
+        console.log(deletedItem)
+        
+    } catch (error) {
+        
+    }
+}
+
+
+//route for removeWishlist
+
+app.delete('/wishList/:productId', async(req,res) => {
+
+
+    try {
+
+        const deletedItem = await removeWishListItems(req.params.productId)
+
+        res.json(deletedItem)
+        
+    } catch (error) {
+        
+        res.json({error: "Hello"})
+    }
+    
+
+})
+
+
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
