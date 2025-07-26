@@ -14,6 +14,7 @@ const app = express();
 app.use(express.json());
 
 const cors = require("cors");
+const Cart = require("./models/cart.models");
 
 const corsOptions = {
   origin: "*",
@@ -247,7 +248,127 @@ app.delete('/wishList/:productId', async(req,res) => {
 })
 
 
+//query to for add to cart
 
+async function addToCart(newItem){
+
+  try {
+
+    const addedItem = new Cart(newItem)
+
+    const saveItem = await addedItem.save()
+
+    return saveItem
+    
+  } catch (error) {
+    
+  }
+
+
+}
+
+
+
+
+app.post('/cart', async (req, res) => {
+
+  try {
+
+    const addedItem = await addToCart(req.body)
+
+    if(!addedItem){
+
+        res.status(404).json({error: "failed to add item to cart"})
+    }else{
+
+      res.status(200).json({message: "Item added to cart successfully."})
+    }
+  } catch (error) {
+
+    res.status(500).json({error: "failed to add item to cart"})
+    
+  }
+})
+
+//query to get allItems from Cart
+
+async function getAllItemsFromCart(){
+
+  try {
+
+    const allItems = await Cart.find().populate('product','title brand')
+
+    return allItems
+    
+  } catch (error) {
+    
+  }
+}
+
+// getAllItemsFromCart()
+
+app.get('/cart', async (req, res) => {
+
+  try {
+
+    const allItems = await getAllItemsFromCart()
+    console.log(allItems)
+    res.json({item: allItems})
+    
+  } catch (error) {
+    
+  }
+})
+
+async function updateCartItems(itemId, action) {
+
+  const cartItem = await Cart.findById(itemId)
+
+  try {
+
+    if(action === "increement"){
+
+      const updatedItemQty = await Cart.findByIdAndUpdate(itemId, {$inc: {quantity: 1}}, {new: true})
+      return updatedItemQty
+    }else if(action === "decreement"){
+
+      if(cartItem.quantity > 1){
+const updatedItemQty = await Cart.findByIdAndUpdate(itemId, {$inc: {quantity: -1}}, {new: true, runValidators: true})
+      return updatedItemQty
+
+      }else{
+
+        return "min qty reached"
+      }
+    }
+
+  } catch (error) {
+    
+  }
+  
+}
+
+
+app.post('/cart/update/:cartItemId', async (req, res) => {
+
+  try {
+
+    const {action} = req.body
+    console.log(action)
+
+    const updatedItem = await updateCartItems(req.params.cartItemId, action)
+
+    if(updatedItem.quantity > 1){
+      console.log(updatedItem)
+      res.status(200).json({message: "Quantity Updated", updateItem: updatedItem})
+    }else{
+      res.json({message: "Minimum Qty Reached"})
+    }
+    
+  } catch (error) {
+    
+  }
+})
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
