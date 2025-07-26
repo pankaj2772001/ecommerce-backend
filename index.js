@@ -4,7 +4,7 @@ initializeData();
 
 const Product = require("./models/products.models");
 const Category = require("./models/categories.models");
-const Wishlist = require('./models/wishlist.models');
+const Wishlist = require("./models/wishlist.models");
 
 const express = require("express");
 require("dotenv").config();
@@ -18,8 +18,8 @@ const Cart = require("./models/cart.models");
 
 const corsOptions = {
   origin: "*",
-  credentials: true,
-  optionSuccessStatus: 200,
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+  allowedHeaders: ["Content-Type"],
 };
 
 app.use(cors(corsOptions));
@@ -194,13 +194,12 @@ app.post("/wishlist", async (req, res) => {
 async function getWishlistItems() {
   try {
     const allItems = await Wishlist.find().populate("product");
-    console.log(allItems)
+    console.log(allItems);
     return allItems;
   } catch (error) {
     console.log("Error fetching wishlist items:", error);
   }
 }
-
 
 app.get("/wishlist", async (req, res) => {
   try {
@@ -211,164 +210,117 @@ app.get("/wishlist", async (req, res) => {
   }
 });
 
-
 //query to removeWishList
 
-async function removeWishListItems(itemId){
+async function removeWishListItems(itemId) {
+  try {
+    const deletedItem = await Wishlist.findByIdAndDelete(itemId);
 
-    try {
-
-        const deletedItem = await Wishlist.findByIdAndDelete(itemId)
-
-        console.log(deletedItem)
-        
-    } catch (error) {
-        
-    }
+    console.log(deletedItem);
+  } catch (error) {}
 }
-
 
 //route for removeWishlist
 
-app.delete('/wishList/:productId', async(req,res) => {
+app.delete("/wishList/:productId", async (req, res) => {
+  try {
+    const deletedItem = await removeWishListItems(req.params.productId);
 
-
-    try {
-
-        const deletedItem = await removeWishListItems(req.params.productId)
-
-        res.json(deletedItem)
-        
-    } catch (error) {
-        
-        res.json({error: "Hello"})
-    }
-    
-
-})
-
+    res.json(deletedItem);
+  } catch (error) {
+    res.json({ error: "Hello" });
+  }
+});
 
 //query to for add to cart
 
-async function addToCart(newItem){
-
+async function addToCart(newItem) {
   try {
+    const addedItem = new Cart(newItem);
 
-    const addedItem = new Cart(newItem)
+    const saveItem = await addedItem.save();
 
-    const saveItem = await addedItem.save()
-
-    return saveItem
-    
-  } catch (error) {
-    
-  }
-
-
+    return saveItem;
+  } catch (error) {}
 }
 
-
-
-
-app.post('/cart', async (req, res) => {
-
+app.post("/cart", async (req, res) => {
   try {
+    const addedItem = await addToCart(req.body);
 
-    const addedItem = await addToCart(req.body)
-
-    if(!addedItem){
-
-        res.status(404).json({error: "failed to add item to cart"})
-    }else{
-
-      res.status(200).json({message: "Item added to cart successfully."})
+    if (!addedItem) {
+      res.status(404).json({ error: "failed to add item to cart" });
+    } else {
+      res.status(200).json({ message: "Item added to cart successfully." });
     }
   } catch (error) {
-
-    res.status(500).json({error: "failed to add item to cart"})
-    
+    res.status(500).json({ error: "failed to add item to cart" });
   }
-})
+});
 
 //query to get allItems from Cart
 
-async function getAllItemsFromCart(){
-
+async function getAllItemsFromCart() {
   try {
+    const allItems = await Cart.find().populate("product", "title brand");
 
-    const allItems = await Cart.find().populate('product','title brand')
-
-    return allItems
-    
-  } catch (error) {
-    
-  }
+    return allItems;
+  } catch (error) {}
 }
 
 // getAllItemsFromCart()
 
-app.get('/cart', async (req, res) => {
-
+app.get("/cart", async (req, res) => {
   try {
-
-    const allItems = await getAllItemsFromCart()
-    console.log(allItems)
-    res.json({item: allItems})
-    
-  } catch (error) {
-    
-  }
-})
+    const allItems = await getAllItemsFromCart();
+    console.log(allItems);
+    res.json({ item: allItems });
+  } catch (error) {}
+});
 
 async function updateCartItems(itemId, action) {
-
-  const cartItem = await Cart.findById(itemId)
+  const cartItem = await Cart.findById(itemId);
 
   try {
-
-    if(action === "increement"){
-
-      const updatedItemQty = await Cart.findByIdAndUpdate(itemId, {$inc: {quantity: 1}}, {new: true})
-      return updatedItemQty
-    }else if(action === "decreement"){
-
-      if(cartItem.quantity > 1){
-const updatedItemQty = await Cart.findByIdAndUpdate(itemId, {$inc: {quantity: -1}}, {new: true, runValidators: true})
-      return updatedItemQty
-
-      }else{
-
-        return "min qty reached"
+    if (action === "increement") {
+      const updatedItemQty = await Cart.findByIdAndUpdate(
+        itemId,
+        { $inc: { quantity: 1 } },
+        { new: true }
+      );
+      return updatedItemQty;
+    } else if (action === "decreement") {
+      if (cartItem.quantity > 1) {
+        const updatedItemQty = await Cart.findByIdAndUpdate(
+          itemId,
+          { $inc: { quantity: -1 } },
+          { new: true, runValidators: true }
+        );
+        return updatedItemQty;
+      } else {
+        return "min qty reached";
       }
     }
-
-  } catch (error) {
-    
-  }
-  
+  } catch (error) {}
 }
 
-
-app.post('/cart/update/:cartItemId', async (req, res) => {
-
+app.post("/cart/update/:cartItemId", async (req, res) => {
   try {
+    const { action } = req.body;
+    console.log(action);
 
-    const {action} = req.body
-    console.log(action)
+    const updatedItem = await updateCartItems(req.params.cartItemId, action);
 
-    const updatedItem = await updateCartItems(req.params.cartItemId, action)
-
-    if(updatedItem.quantity > 1){
-      console.log(updatedItem)
-      res.status(200).json({message: "Quantity Updated", updateItem: updatedItem})
-    }else{
-      res.json({message: "Minimum Qty Reached"})
+    if (updatedItem.quantity > 1) {
+      console.log(updatedItem);
+      res
+        .status(200)
+        .json({ message: "Quantity Updated", updateItem: updatedItem });
+    } else {
+      res.json({ message: "Minimum Qty Reached" });
     }
-    
-  } catch (error) {
-    
-  }
-})
+  } catch (error) {}
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
