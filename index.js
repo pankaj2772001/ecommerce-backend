@@ -321,6 +321,35 @@ app.post("/cart/update/:cartItemId", async (req, res) => {
     }
   } catch (error) {}
 });
+
+
+//query for remove item from cart
+
+async function removeItemFromCart(itemId){
+
+  try {
+
+    const removedItem = await Cart.findByIdAndDelete(itemId)
+    
+    return removedItem
+  } catch (error) {
+    
+  }
+}
+
+app.delete('/cart/:cartId', async (req,res) => {
+
+  try {
+
+    const removedItem = await removeItemFromCart(req.params.cartId)
+
+    res.json(removedItem)
+    
+  } catch (error) {
+    
+  }
+})
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
