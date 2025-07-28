@@ -262,7 +262,7 @@ app.post("/cart", async (req, res) => {
 
 async function getAllItemsFromCart() {
   try {
-    const allItems = await Cart.find().populate("product", "title brand");
+    const allItems = await Cart.find().populate("product", "title brand price originalPrice discountPercentage");
 
     return allItems;
   } catch (error) {}
