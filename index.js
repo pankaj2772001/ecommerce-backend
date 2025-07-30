@@ -364,6 +364,8 @@ async function addNewAddress(newAddress){
     return saveAddress
     
   } catch (error) {
+
+    console.log("failed to add new address")
     
   }
 
