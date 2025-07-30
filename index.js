@@ -395,11 +395,11 @@ res.status(200).json({message: "Address added successfully", address: addedAddre
 
 //query to updateAdd by id
 
-async function updateAddress(addressId, dataToUpdate){
+async function updateAddress(addressName, dataToUpdate){
 
   try {
 
-    const updatedAddress = await Address.findByIdAndUpdate(addressId, dataToUpdate, {new: true})
+    const updatedAddress = await Address.findOneAndUpdate({fullName: addressName}, dataToUpdate, {new: true})
 
     return updatedAddress
 
@@ -411,12 +411,12 @@ async function updateAddress(addressId, dataToUpdate){
 }
 
 //route to updateAdd by id
-app.post("/address/update/:addressId", async (req, res) => {
+app.post("/address/update/:addressName", async (req, res) => {
 
   try {
 
 
-    const updatedAddress = await updateAddress(req.params.addressId, req.body)
+    const updatedAddress = await updateAddress(req.params.addressName, req.body)
 
     res.json({message: "Address Update Successfully", updatedAdd: updatedAddress})
 
