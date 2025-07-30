@@ -474,6 +474,39 @@ app.get('/address', async (req, res) => {
 })
 
 
+//query for deleting the adress
+
+async function deleteAddress(addressId){
+
+  try {
+
+    const deletedAddress = await Address.findByIdAndDelete(addressId)
+
+    return deletedAddress
+    
+  } catch (error) {
+    console.log("Failed to delete address")
+  }
+}
+
+//route for deleting address
+
+app.delete('/address/:addressId', async (req, res) => {
+
+  try {
+
+    const deletedAdress = await deleteAddress(req.params.addressId)
+
+    res.json({message: "Address deleted successfully"})
+    
+  } catch (error) {
+
+    res.json({error: "Failed to delete address"})
+    
+  }
+})
+
+
 
 const PORT = process.env.PORT || 3000;
 
