@@ -413,11 +413,10 @@ async function updateAddress(addressId, dataToUpdate){
 //route to updateAdd by id
 app.post("/address/update/:addressId", async (req, res) => {
 
-  console.log(req.body)
 
   try {
 
-
+    
     const updatedAddress = await updateAddress(req.params.addressId, req.body)
 
     res.json({message: "Address Update Successfully", updatedAdd: updatedAddress})
