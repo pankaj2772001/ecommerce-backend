@@ -452,7 +452,7 @@ app.get('/address', async (req, res) => {
 
     const allAddress = await getAllAddress()
 
-    if(allAddress.length !== 0){
+    if(allAddress.length != 0){
 
       res.json(allAddress)
 
