@@ -389,6 +389,8 @@ res.status(200).json({message: "Address added successfully", address: addedAddre
   
     
   } catch (error) {
+
+    res.status(500).json({error: "Failed to add address"})
     
   }
 })
