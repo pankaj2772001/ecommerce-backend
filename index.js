@@ -5,6 +5,7 @@ initializeData();
 const Product = require("./models/products.models");
 const Category = require("./models/categories.models");
 const Wishlist = require("./models/wishlist.models");
+const Address = require('./models/address.model')
 
 const express = require("express");
 require("dotenv").config();
@@ -349,6 +350,125 @@ app.delete('/cart/:cartId', async (req,res) => {
     
   }
 })
+
+//query for adding new address
+
+async function addNewAddress(newAddress){
+
+  try {
+
+    const address = new Address(newAddress)
+
+    const saveAddress = await address.save()
+
+    return saveAddress
+    
+  } catch (error) {
+    
+  }
+
+
+}
+
+// route for adding new address
+
+app.post("/address", async (req, res) => {
+
+  try {
+
+    const addedAddress = await addNewAddress(req.body)
+
+    if(addedAddress.length !== 0){
+
+res.status(200).json({message: "Address added successfully", address: addedAddress})
+
+    }else{
+  res.status(404).json({error: "Failed to add address"})
+
+    }
+  
+    
+  } catch (error) {
+    
+  }
+})
+
+//query to updateAdd by id
+
+async function updateAddress(addressId, dataToUpdate){
+
+  try {
+
+    const updatedAddress = await Address.findByIdAndUpdate(addressId, dataToUpdate, {new: true})
+
+    return updatedAddress
+
+    
+  } catch (error) {
+
+    console.log("Failed to update address", error)
+  }
+}
+
+//route to updateAdd by id
+app.post("/address/update/:addressId", async (req, res) => {
+
+  try {
+
+
+    const updatedAddress = await updateAddress(req.params.addressId, req.body)
+
+    res.json({message: "Address Update Successfully", updatedAdd: updatedAddress})
+
+    
+  } catch (error) {
+    
+    res.status(500).json({error: "Failed to update address"})
+  }
+})
+
+// query to get all Address
+
+async function getAllAddress(){
+
+  try {
+    
+    const allAddress = await Address.find()
+
+    return allAddress
+
+  } catch (error) {
+
+    console.log("address not found")
+    
+  }
+}
+
+// route to get all Address
+
+app.get('/address', async (req, res) => {
+
+  try {
+
+    const allAddress = await getAllAddress()
+
+    if(allAddress.length !== 0){
+
+      res.json(allAddress)
+
+    }else{
+
+      res.json({error: "No address found"})
+    }
+    
+  } catch (error) {
+
+    res.status(500).json({error: "Failed to fetch address"})
+    
+  }
+})
+
+
 
 const PORT = process.env.PORT || 3000;
 
