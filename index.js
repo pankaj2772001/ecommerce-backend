@@ -16,6 +16,7 @@ app.use(express.json());
 
 const cors = require("cors");
 const Cart = require("./models/cart.models");
+const Order = require("./models/order.model");
 
 const corsOptions = {
   origin: "*",
@@ -503,6 +504,42 @@ app.delete('/address/:addressId', async (req, res) => {
 
     res.json({error: "Failed to delete address"})
     
+  }
+})
+
+//query to create new Order
+
+async function createNewOrder(newOrder){
+  
+
+  try {
+
+    const order = new Order(newOrder)
+
+    const saveOrder = await order.save()
+
+    return saveOrder
+    
+  } catch (error) {
+
+    console.log("Failed to add new order")
+    
+  }
+}
+
+// route to create new order
+
+app.post('/order', async (req, res) => {
+
+  try {
+
+    const order = await createNewOrder(req.body)
+
+    res.json(order)
+    
+  } catch (error) {
+    
+    res.status(500).json({error: "Failed to order items"})
   }
 })
 
