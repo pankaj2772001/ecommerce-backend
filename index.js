@@ -531,7 +531,19 @@ async function createNewOrder(newOrder){
 
 app.post('/order', async (req, res) => {
 
-  try {
+  const {cartItems, address, totalAmount, orderDate} = req.body
+
+  console.log(cartItems)
+  console.log(address)
+  console.log(totalAmount)
+  console.log(orderDate)
+
+  if(!cartItems || !address || !totalAmount || !orderDate){
+
+    console.log("invalid Data")
+  }else{
+
+    try {
 
     const order = await createNewOrder(req.body)
 
@@ -541,6 +553,11 @@ app.post('/order', async (req, res) => {
     
     res.status(500).json({error: "Failed to place order"})
   }
+
+
+  }
+
+  
 })
 
 
