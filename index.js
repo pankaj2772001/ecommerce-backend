@@ -539,7 +539,7 @@ app.post('/order', async (req, res) => {
     
   } catch (error) {
     
-    res.status(500).json({error: "Failed to order items"})
+    res.status(500).json({error: "Failed to place order"})
   }
 })
 
