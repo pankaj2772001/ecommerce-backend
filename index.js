@@ -216,7 +216,7 @@ app.get("/wishlist", async (req, res) => {
 
 async function removeWishListItems(itemId) {
   try {
-    const deletedItem = await Wishlist.findByIdAndDelete(itemId);
+    const deletedItem = await Wishlist.findOneAndDelete({product: itemId});
 
     console.log(deletedItem);
   } catch (error) {}
