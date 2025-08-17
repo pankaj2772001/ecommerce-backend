@@ -6,6 +6,7 @@ const Product = require("./models/products.models");
 const Category = require("./models/categories.models");
 const Wishlist = require("./models/wishlist.models");
 const Address = require('./models/address.model')
+const upload = require('./cloudinary/cloudinary')
 
 const express = require("express");
 require("dotenv").config();
@@ -21,7 +22,7 @@ const Order = require("./models/order.model");
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 };
 
 app.use(cors(corsOptions));
@@ -133,6 +134,50 @@ app.post("/products", async (req, res) => {
     res.status(500).json({ error: "Failed to add product" });
   }
 });
+
+//! query for update product by id
+
+async function updateProductById(productId, dataToUpdate){
+
+
+
+  try {
+
+    const product = await Product.findByIdAndUpdate(productId, dataToUpdate, {new: true})
+
+    return product
+
+  } catch (error) {
+    
+  }
+
+
+}
+
+
+
+app.post('/product/:productId', upload.single("image"), async(req, res) => {
+
+  console.log(req.file.path)
+
+
+  try {
+
+    const updateData = { ...req.body };
+    console.log(updateData)
+    if (req.file && req.file.path) {
+      updateData.image = req.file.path;
+    }
+    const updatedProduct = await updateProductById(req.params.productId, updateData)
+
+    res.json(updatedProduct)
+    
+  } catch (error) {
+
+    res.json(error)
+    
+  }
+})
 
 //! query for fetch all products
 
