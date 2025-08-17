@@ -22,7 +22,7 @@ const Order = require("./models/order.model");
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  allowedHeaders: ["Content-Type"],
 };
 
 app.use(cors(corsOptions));
